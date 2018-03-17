@@ -1,0 +1,51 @@
+{
+  "name": "hyper-toolbar",
+  "version": "0.0.0",
+  "description": "Customizable toolbar for Hyper.js",
+  "main": "src",
+  "scripts": {
+    "compile": "node ./config/compile",
+    "build": "webpack --config config/build src",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/tuomashatakka/hyper-toolbar.git"
+  },
+  "keywords": [
+    "hyper",
+    "hyperplugin",
+    "plugin",
+    "hyperterm",
+    "hyperjs",
+    "toolbar",
+    "shortcut",
+    "ui",
+    "userinterface",
+    "gui",
+    "button",
+    "productivity"
+  ],
+  "author": "tuomashatakka",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tuomashatakka/hyper-toolbar/issues"
+  },
+  "homepage": "https://github.com/tuomashatakka/hyper-toolbar#readme",
+  "dependencies": {
+    "autobind-decorator": "^2.1.0",
+    "event-kit": "^2.4.0",
+    "react": "^16.2.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.0.0-beta.42",
+    "@babel/plugin-proposal-object-rest-spread": "^7.0.0-beta.42",
+    "@babel/plugin-transform-runtime": "^7.0.0-beta.42",
+    "@babel/preset-env": "^7.0.0-beta.42",
+    "@babel/preset-react": "^7.0.0-beta.42",
+    "@babel/runtime": "^7.0.0-beta.42",
+    "babel-loader": "^8.0.0-beta.2",
+    "webpack": "^4.1.1",
+    "webpack-cli": "^2.0.12"
+  }
+}
