@@ -8,15 +8,16 @@ export default (ExtendedComponent) =>
 
     static get defaultProps () {
       return {
-        itemBackgroundColor: 'crimson',
-        toolbarItems:  null,
-        toolbarHeight: 80,
-        itemGutter:    1,
+        itemBackgroundColorHover: 'transparent',
+        itemBackgroundColor:      'transparent',
+        toolbarItems:             null,
+        toolbarHeight:            80,
+        itemGutter:               1,
       }
     }
 
     constructor (props) {
-      super (props)
+      super(props)
       this.renderToolbarItem = this.renderToolbarItem.bind(this)
     }
 
@@ -46,14 +47,19 @@ export default (ExtendedComponent) =>
       </div>
     }
 
+    proxyDispatch (cmd) {
+      return () => this.props.runShellCommand(cmd)
+    }
+
     // eslint-disable-next-line class-methods-use-this
     renderToolbarItem (item) {
       return <button
         className={ this.css.selector.toolbarItem }
-        onClick={ item.onClick }>
+        onClick={ this.proxyDispatch(item.command) }>
         { item.children }
       </button>
     }
+
   }
 
 
@@ -74,14 +80,16 @@ const decorateStyle = props => Stylesheet.apply({
   },
 
   terms: {
+    position: 'relative',
     flex: '1 1',
   },
 
   toolbar: {
     position: 'relative',
     display:  'flex',
-    height:   `${props.toolbarHeight}px`,
     zIndex:   100,
+    height:   `${props.toolbarHeight}px`,
+    margin:   `0 0 -${props.toolbarGutter}px`,
   },
 
   toolbarItem: {
@@ -101,8 +109,8 @@ const decorateStyle = props => Stylesheet.apply({
     outline: 'none',
   },
   'button:hover': {
+    color:  'white',
     cursor: 'pointer',
-    color: 'white',
-    backgroundColor: '#4c23f1'
+    backgroundColor: props.itemBackgroundColorHover,
   },
 })

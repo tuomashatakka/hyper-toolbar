@@ -5,6 +5,7 @@ var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefau
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.getConfigurationInterface = getConfigurationInterface;
 exports.runShell = runShell;
 
 var _toArray2 = _interopRequireDefault(require("@babel/runtime/helpers/toArray"));

@@ -4,6 +4,12 @@ var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefau
 
 var _assign = _interopRequireDefault(require("@babel/runtime/core-js/object/assign"));
 
+var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
+
+var _entries = _interopRequireDefault(require("@babel/runtime/core-js/object/entries"));
+
+var _typeof2 = _interopRequireDefault(require("@babel/runtime/helpers/typeof"));
+
 var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
 var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
@@ -13,7 +19,7 @@ var render = require('../dist/render').default;
 
 var _require = require('../dist/utils'),
     runShell = _require.runShell,
-    configuration = _require.configuration; // function getPlugin () {
+    getConfigurationInterface = _require.getConfigurationInterface; // function getPlugin () {
 //   return plugin || (plugin = new ToolbarPlugin())
 // }
 //
@@ -35,38 +41,66 @@ function () {
   }
 
   (0, _createClass2.default)(ToolbarItem, [{
-    key: "onClick",
+    key: "command",
     get: function get() {
-      var _this = this;
-
-      if (typeof this.clickHandler === 'string') return function () {
-        return runShell(_this.clickHandler);
-      };
-      if (typeof this.clickHandler === 'function') return this.clickHandler;
+      if (typeof this.clickHandler === 'string') return this.clickHandler;
+      if (typeof this.clickHandler === 'function') return 'should run: ' + this.clickHandler.name;
     }
   }]);
   return ToolbarItem;
 }();
 
+function resolveToolbarItems(data) {
+  var items;
+  if ((0, _typeof2.default)(data) === 'object') if (data instanceof Array) items = data;else items = (0, _entries.default)(data).map(function (_ref) {
+    var _ref2 = (0, _slicedToArray2.default)(_ref, 2),
+        children = _ref2[0],
+        onClick = _ref2[1];
+
+    return {
+      children: children,
+      onClick: onClick
+    };
+  });
+  return items.map(function (item) {
+    return new ToolbarItem(item.children || item.text || item.content, item.callback || item.action || item.onClick);
+  });
+}
+
 var defaultConfig = {
-  toolbarItems: [new ToolbarItem('Pressme', function () {
-    return alert("Paska xd");
-  })]
+  toolbarItemBackgroundColorHover: '#4c23f1',
+  toolbarItemBackgroundColor: 'rgba(98, 83, 161, 0.17)',
+  toolbarHeight: 80,
+  toolbarItems: [],
+  itemGutter: 1
 };
 
-exports.decorateConfig = function decorateConfig(config) {
-  config = (0, _assign.default)({}, defaultConfig, config);
-  return config;
+exports.decorateConfig = function (config) {
+  return (0, _assign.default)({}, defaultConfig, config);
 };
 
 exports.mapTermsState = function mapTermsState(state, map) {
-  var toolbarItems = configuration.toolbarItems || defaultConfig.toolbarItems;
+  var conf = getConfigurationInterface().getConfig();
+  var toolbarItems = resolveToolbarItems(conf.toolbarItems || defaultConfig.toolbarItems);
+  var toolbarItemBackgroundColor = conf.toolbarItemBackgroundColor,
+      toolbarItemBackgroundColorHover = conf.toolbarItemBackgroundColorHover;
+  console.log(conf, map);
   return (0, _assign.default)({}, map, {
-    toolbarItems: toolbarItems
+    toolbarItems: toolbarItems,
+    toolbarItemBackgroundColor: toolbarItemBackgroundColor,
+    toolbarItemBackgroundColorHover: toolbarItemBackgroundColorHover
   });
 };
 
-exports.decorateTerms = function decorateHyper(ComponentClass, _ref) {
-  var React = _ref.React;
+exports.mapTermsDispatch = function (dispatch, map) {
+  return (0, _assign.default)({}, map, {
+    runShell: function runShell(cmd) {
+      return dispatch(runShellCommand(cmd));
+    }
+  });
+};
+
+exports.decorateTerms = function (ComponentClass, _ref3) {
+  var React = _ref3.React;
   return render(ComponentClass, React);
 };

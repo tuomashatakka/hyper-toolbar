@@ -36,7 +36,8 @@ var _default = function _default(ExtendedComponent) {
         key: "defaultProps",
         get: function get() {
           return {
-            itemBackgroundColor: 'crimson',
+            itemBackgroundColorHover: 'transparent',
+            itemBackgroundColor: 'transparent',
             toolbarItems: null,
             toolbarHeight: 80,
             itemGutter: 1
@@ -77,6 +78,15 @@ var _default = function _default(ExtendedComponent) {
           }, _react.default.createElement(ExtendedComponent, props)), toolbarItems && _react.default.createElement("aside", {
             className: this.css.selector.toolbar
           }, toolbarItems.map(this.renderToolbarItem)));
+        }
+      }, {
+        key: "proxyDispatch",
+        value: function proxyDispatch(cmd) {
+          var _this2 = this;
+
+          return function () {
+            return _this2.props.runShellCommand(cmd);
+          };
         } // eslint-disable-next-line class-methods-use-this
 
       }, {
@@ -84,7 +94,7 @@ var _default = function _default(ExtendedComponent) {
         value: function renderToolbarItem(item) {
           return _react.default.createElement("button", {
             className: this.css.selector.toolbarItem,
-            onClick: item.onClick
+            onClick: this.proxyDispatch(item.command)
           }, item.children);
         }
       }]);
@@ -105,13 +115,15 @@ var decorateStyle = function decorateStyle(props) {
       height: '100%'
     },
     terms: {
+      position: 'relative',
       flex: '1 1'
     },
     toolbar: {
       position: 'relative',
       display: 'flex',
+      zIndex: 100,
       height: "".concat(props.toolbarHeight, "px"),
-      zIndex: 100
+      margin: "0 0 -".concat(props.toolbarGutter, "px")
     },
     toolbarItem: {
       margin: 0,
@@ -129,9 +141,9 @@ var decorateStyle = function decorateStyle(props) {
       outline: 'none'
     },
     'button:hover': {
-      cursor: 'pointer',
       color: 'white',
-      backgroundColor: '#4c23f1'
+      cursor: 'pointer',
+      backgroundColor: props.itemBackgroundColorHover
     }
   });
 };
