@@ -1,7 +1,12 @@
 
 export function getConfigurationInterface () {
+  console.log("Resolving config", window.config)
+  if (typeof window === 'object' && window.config)
+    return window.config
+
   const elc = require('electron')
   const app = elc.remote ? elc.remote.app : {}
+
   return app.config || { getConfig: () => ({}) }
 }
 

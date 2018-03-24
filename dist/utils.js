@@ -10,7 +10,12 @@ exports.runShell = runShell;
 
 var _toArray2 = _interopRequireDefault(require("@babel/runtime/helpers/toArray"));
 
+var _typeof2 = _interopRequireDefault(require("@babel/runtime/helpers/typeof"));
+
 function getConfigurationInterface() {
+  console.log("Resolving config", window.config);
+  if ((typeof window === "undefined" ? "undefined" : (0, _typeof2.default)(window)) === 'object' && window.config) return window.config;
+
   var elc = require('electron');
 
   var app = elc.remote ? elc.remote.app : {};

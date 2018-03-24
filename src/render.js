@@ -8,11 +8,13 @@ export default (ExtendedComponent) =>
 
     static get defaultProps () {
       return {
-        itemBackgroundColorHover: 'transparent',
-        itemBackgroundColor:      'transparent',
-        toolbarItems:             null,
-        toolbarHeight:            80,
-        itemGutter:               1,
+        toolbar: {
+          itemBackgroundColorHover: 'transparent',
+          itemBackgroundColor: 'transparent',
+          height: 80,
+          gutter: 1,
+          items: null,
+        }
       }
     }
 
@@ -31,16 +33,16 @@ export default (ExtendedComponent) =>
     }
 
     render () {
-      const { toolbarItems, ...props } = this.props
+      const { toolbar, items, ...props } = this.props
 
       return <div className={ this.css.selector.container }>
         <section className={ this.css.selector.terms }>
           <ExtendedComponent {...props} />
         </section>
 
-        { toolbarItems &&
+        { items &&
           <aside className={ this.css.selector.toolbar }>
-            { toolbarItems.map(this.renderToolbarItem) }
+            { items.map(this.renderToolbarItem) }
           </aside>
         }
 
@@ -88,8 +90,8 @@ const decorateStyle = props => Stylesheet.apply({
     position: 'relative',
     display:  'flex',
     zIndex:   100,
-    height:   `${props.toolbarHeight}px`,
-    margin:   `0 0 -${props.toolbarGutter}px`,
+    height:   `${props.toolbar.height}px`,
+    margin:   `0 0 -${props.toolbar.gutter}px`,
   },
 
   toolbarItem: {
@@ -97,9 +99,10 @@ const decorateStyle = props => Stylesheet.apply({
     flexGrow:         1,
     border:           'none',
     appearance:       'none',
-    minWidth:         `${props.toolbarHeight}px`,
-    marginRight:      `${props.itemGutter}px`,
-    backgroundColor:  props.itemBackgroundColor,
+    minWidth:         `${props.toolbar.height}px`,
+    marginRight:      `${props.toolbar.gutter}px`,
+    color:            props.toolbar.itemTextColor,
+    backgroundColor:  props.toolbar.itemBackgroundColor,
     textTransform:    'uppercase',
     letterSpacing:    '2px',
     transition,
@@ -109,8 +112,8 @@ const decorateStyle = props => Stylesheet.apply({
     outline: 'none',
   },
   'button:hover': {
-    color:  'white',
+    color: props.toolbar.itemTextColorHover,
     cursor: 'pointer',
-    backgroundColor: props.itemBackgroundColorHover,
+    backgroundColor: props.toolbar.itemBackgroundColorHover,
   },
 })

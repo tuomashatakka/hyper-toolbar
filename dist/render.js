@@ -36,11 +36,13 @@ var _default = function _default(ExtendedComponent) {
         key: "defaultProps",
         get: function get() {
           return {
-            itemBackgroundColorHover: 'transparent',
-            itemBackgroundColor: 'transparent',
-            toolbarItems: null,
-            toolbarHeight: 80,
-            itemGutter: 1
+            toolbar: {
+              itemBackgroundColorHover: 'transparent',
+              itemBackgroundColor: 'transparent',
+              height: 80,
+              gutter: 1,
+              items: null
+            }
           };
         }
       }]);
@@ -69,15 +71,16 @@ var _default = function _default(ExtendedComponent) {
         key: "render",
         value: function render() {
           var _props = this.props,
-              toolbarItems = _props.toolbarItems,
-              props = (0, _objectWithoutProperties2.default)(_props, ["toolbarItems"]);
+              toolbar = _props.toolbar,
+              items = _props.items,
+              props = (0, _objectWithoutProperties2.default)(_props, ["toolbar", "items"]);
           return _react.default.createElement("div", {
             className: this.css.selector.container
           }, _react.default.createElement("section", {
             className: this.css.selector.terms
-          }, _react.default.createElement(ExtendedComponent, props)), toolbarItems && _react.default.createElement("aside", {
+          }, _react.default.createElement(ExtendedComponent, props)), items && _react.default.createElement("aside", {
             className: this.css.selector.toolbar
-          }, toolbarItems.map(this.renderToolbarItem)));
+          }, items.map(this.renderToolbarItem)));
         }
       }, {
         key: "proxyDispatch",
@@ -122,17 +125,18 @@ var decorateStyle = function decorateStyle(props) {
       position: 'relative',
       display: 'flex',
       zIndex: 100,
-      height: "".concat(props.toolbarHeight, "px"),
-      margin: "0 0 -".concat(props.toolbarGutter, "px")
+      height: "".concat(props.toolbar.height, "px"),
+      margin: "0 0 -".concat(props.toolbar.gutter, "px")
     },
     toolbarItem: {
       margin: 0,
       flexGrow: 1,
       border: 'none',
       appearance: 'none',
-      minWidth: "".concat(props.toolbarHeight, "px"),
-      marginRight: "".concat(props.itemGutter, "px"),
-      backgroundColor: props.itemBackgroundColor,
+      minWidth: "".concat(props.toolbar.height, "px"),
+      marginRight: "".concat(props.toolbar.gutter, "px"),
+      color: props.toolbar.itemTextColor,
+      backgroundColor: props.toolbar.itemBackgroundColor,
       textTransform: 'uppercase',
       letterSpacing: '2px',
       transition: transition
@@ -141,9 +145,9 @@ var decorateStyle = function decorateStyle(props) {
       outline: 'none'
     },
     'button:hover': {
-      color: 'white',
+      color: props.toolbar.itemTextColorHover,
       cursor: 'pointer',
-      backgroundColor: props.itemBackgroundColorHover
+      backgroundColor: props.toolbar.itemBackgroundColorHover
     }
   });
 };

@@ -1,17 +1,16 @@
-// const ToolbarPlugin = require('../dist/ToolbarPlugin').default
 const render = require('../dist/render').default
 const { getConfigurationInterface } = require('../dist/utils')
 
-// function getPlugin () {
-//   return plugin || (plugin = new ToolbarPlugin())
-// }
-//
-// function clearPlugin () {
-//   if (plugin.dispose)
-//     plugin.dispose()
-//   if (plugin)
-//     plugin = null
-// }
+
+const defaultConfig = {
+  itemTextColor:            '#ffafe0',
+  itemTextColorHover:       'white',
+  itemBackgroundColor:      'rgba(255, 31, 96, 0.2)',
+  itemBackgroundColorHover: 'rgb(255, 31, 96)',
+  height:                   80,
+  items:                    {},
+  itemGutter:               1,
+}
 
 
 function run (command, uid) {
@@ -42,41 +41,35 @@ function resolveToolbarItems (data) {
   let items
 
   if (typeof data === 'object')
-    if (data instanceof Array)
-      items = data
-    else
-      items = Object
-        .entries(data)
-        .map(([ key, action ]) =>
+    items = data instanceof Array ? data : Object
+      .entries(data)
+      .map(([ key, action ]) =>
         new ToolbarItem(key, action))
 
   return items
 }
 
 
-const defaultConfig = {
-  toolbarItemBackgroundColorHover: '#4c23f1',
-  toolbarItemBackgroundColor:      'rgba(98, 83, 161, 0.17)',
-  toolbarHeight:                   80,
-  toolbarItems:                    [],
-  itemGutter:                      1,
+exports.decorateConfig = (config) => {
+  const toolbar = Object.assign({}, defaultConfig, config.toolbar || {})
+  return Object.assign({}, config, { toolbar })
 }
 
 
-exports.decorateConfig = (config) =>
-  Object.assign({}, defaultConfig, config)
-
-
 exports.mapTermsState = function mapTermsState (state, map) {
-  const conf = getConfigurationInterface().getConfig()
-  const toolbarItems = resolveToolbarItems(conf.toolbarItems || defaultConfig.toolbarItems)
-  const { toolbarItemBackgroundColor, toolbarItemBackgroundColorHover } = conf
+  let toolbar = {}
+  let conf = Object.assign({}, defaultConfig, config.getConfig().toolbar || {})
 
-  return Object.assign({}, map, {
-    toolbarItems,
-    toolbarItemBackgroundColor,
-    toolbarItemBackgroundColorHover
+  console.warn("Conf", conf)
+  for (let key of Object.keys(conf).filter(key => key !== 'items'))
+    toolbar[key] = conf[key]
+  console.warn("Toolbar", toolbar)
+  const props = Object.assign({}, map, {
+    toolbar,
+    items: resolveToolbarItems(conf.items),
   })
+  console.log("PROPS", props)
+  return props
 }
 
 
