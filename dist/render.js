@@ -7,6 +7,7 @@ var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefau
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.formatIconName = formatIconName;
 exports.default = void 0;
 
 var _objectWithoutProperties2 = _interopRequireDefault(require("@babel/runtime/helpers/objectWithoutProperties"));
@@ -26,6 +27,41 @@ var _assertThisInitialized2 = _interopRequireDefault(require("@babel/runtime/hel
 var _react = _interopRequireWildcard(require("react"));
 
 var _DynamicStylesheet = _interopRequireDefault(require("./DynamicStylesheet"));
+
+var iconSets = {
+  md: require('react-icons/lib/md'),
+  fa: require('react-icons/lib/fa')
+};
+
+function formatIconName(name) {
+  var iconset = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'Md';
+  var firstLetter = name[0].toUpperCase();
+  var body = name.substr(1);
+
+  var clean = function clean(text) {
+    return text.replace(/(?:[^\w]+(\w))/g, function (_, c) {
+      return c.toUpperCase();
+    });
+  };
+
+  return iconset[0].toUpperCase() + iconset[1].toLowerCase() + firstLetter + clean(body);
+}
+
+function resolveIcon(props) {
+  var attrs = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  var name = props.icon;
+  var iconset = props.iconset || 'Md';
+  console.info("resolving icon for", props);
+  console.info("resolved icon/set", name, iconset);
+  if (!name) return null;
+  var iconName = formatIconName(name, iconset);
+  var iconGroup = iconSets[iconset.toLowerCase()];
+  console.info("resolved iconName, iconGroup", iconName, iconGroup);
+  if (!iconGroup) return null;
+  var IconComponent = iconGroup[iconName];
+  if (IconComponent) return _react.default.createElement(IconComponent, attrs);
+  throw new ReferenceError("Invalid value for the icon prop (".concat(name || 'undefined', " \u2248 ").concat(iconName, ").") + "See https://material.io/icons/ for a list of valid icon names.");
+}
 
 var _default = function _default(ExtendedComponent) {
   return (
@@ -95,10 +131,13 @@ var _default = function _default(ExtendedComponent) {
       }, {
         key: "renderToolbarItem",
         value: function renderToolbarItem(item) {
+          var icon = resolveIcon(item, {
+            className: this.css.selector.toolbarItemIcon
+          });
           return _react.default.createElement("button", {
             className: this.css.selector.toolbarItem,
             onClick: this.proxyDispatch(item.command)
-          }, item.children);
+          }, icon, item.children);
         }
       }]);
       return Host;
@@ -131,6 +170,9 @@ var decorateStyle = function decorateStyle(props) {
     toolbarItem: {
       margin: 0,
       flexGrow: 1,
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
       border: 'none',
       appearance: 'none',
       minWidth: "".concat(props.toolbar.height, "px"),
@@ -140,6 +182,11 @@ var decorateStyle = function decorateStyle(props) {
       textTransform: 'uppercase',
       letterSpacing: '2px',
       transition: transition
+    },
+    toolbarItemIcon: {
+      width: '3em',
+      height: 'auto',
+      padding: '0 0.6em'
     },
     'button:focus': {
       outline: 'none'

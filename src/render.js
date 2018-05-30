@@ -1,6 +1,51 @@
 import React, { Component } from 'react'
 import Stylesheet from './DynamicStylesheet'
 
+const iconSets = {
+  md: require('react-icons/lib/md'),
+  fa: require('react-icons/lib/fa'),
+}
+
+
+export function formatIconName(name, iconset = 'Md') {
+  const firstLetter = name[0].toUpperCase()
+  const body = name.substr(1)
+
+  const clean = text =>
+    text.replace(/(?:[^\w]+(\w))/g, (_, c) => c.toUpperCase())
+
+  return iconset[0].toUpperCase() +
+         iconset[1].toLowerCase() +
+         firstLetter +
+         clean(body)
+}
+
+function resolveIcon (props, attrs={}) {
+  const name    = props.icon
+  const iconset = props.iconset || 'Md'
+
+  console.info("resolving icon for", props)
+  console.info("resolved icon/set", name, iconset)
+
+  if (!name)
+    return null
+
+  let iconName  = formatIconName(name, iconset)
+  let iconGroup = iconSets[iconset.toLowerCase()]
+  console.info("resolved iconName, iconGroup", iconName, iconGroup)
+
+  if (!iconGroup)
+    return null
+
+  let IconComponent = iconGroup[iconName]
+  if (IconComponent)
+    return <IconComponent { ...attrs } />
+
+  throw new ReferenceError(
+    `Invalid value for the icon prop (${name || 'undefined'} ≈ ${iconName}).` +
+    `See https://material.io/icons/ for a list of valid icon names.`)
+}
+
 
 export default (ExtendedComponent) =>
 
@@ -55,10 +100,18 @@ export default (ExtendedComponent) =>
 
     // eslint-disable-next-line class-methods-use-this
     renderToolbarItem (item) {
+
+      const icon = resolveIcon(item, {
+        className: this.css.selector.toolbarItemIcon
+      })
+
       return <button
         className={ this.css.selector.toolbarItem }
         onClick={ this.proxyDispatch(item.command) }>
+
+        { icon }
         { item.children }
+
       </button>
     }
 
@@ -97,6 +150,9 @@ const decorateStyle = props => Stylesheet.apply({
   toolbarItem: {
     margin:           0,
     flexGrow:         1,
+    display:          'flex',
+    justifyContent:   'center',
+    alignItems:       'center',
     border:           'none',
     appearance:       'none',
     minWidth:         `${props.toolbar.height}px`,
@@ -106,6 +162,12 @@ const decorateStyle = props => Stylesheet.apply({
     textTransform:    'uppercase',
     letterSpacing:    '2px',
     transition,
+  },
+
+  toolbarItemIcon: {
+    width: '3em',
+    height: 'auto',
+    padding: '0 0.6em',
   },
 
   'button:focus': {

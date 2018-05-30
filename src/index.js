@@ -20,9 +20,11 @@ function run (command, uid) {
 
 class ToolbarItem {
 
-  constructor (key, action) {
-    this.children = key
-    this.action = action
+  constructor (item) {
+    this.children = item.text
+    this.action   = item.action
+    this.icon     = item.icon || null
+    this.iconset  = item.iconset || 'md'
   }
 
   get command () {
@@ -41,10 +43,9 @@ function resolveToolbarItems (data) {
   let items
 
   if (typeof data === 'object')
-    items = data instanceof Array ? data : Object
-      .entries(data)
-      .map(([ key, action ]) =>
-        new ToolbarItem(key, action))
+    items = (data instanceof Array
+      ? data : Object.entries(data).map(([ text, action ]) => ({ key, action })))
+    .map((item) => new ToolbarItem(item))
 
   return items
 }

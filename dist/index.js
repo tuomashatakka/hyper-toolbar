@@ -40,10 +40,12 @@ function run(command, uid) {
 var ToolbarItem =
 /*#__PURE__*/
 function () {
-  function ToolbarItem(key, action) {
+  function ToolbarItem(item) {
     (0, _classCallCheck2.default)(this, ToolbarItem);
-    this.children = key;
-    this.action = action;
+    this.children = item.text;
+    this.action = item.action;
+    this.icon = item.icon || null;
+    this.iconset = item.iconset || 'md';
   }
 
   (0, _createClass2.default)(ToolbarItem, [{
@@ -59,12 +61,17 @@ function () {
 
 function resolveToolbarItems(data) {
   var items;
-  if ((0, _typeof2.default)(data) === 'object') items = data instanceof Array ? data : (0, _entries.default)(data).map(function (_ref) {
+  if ((0, _typeof2.default)(data) === 'object') items = (data instanceof Array ? data : (0, _entries.default)(data).map(function (_ref) {
     var _ref2 = (0, _slicedToArray2.default)(_ref, 2),
-        key = _ref2[0],
+        text = _ref2[0],
         action = _ref2[1];
 
-    return new ToolbarItem(key, action);
+    return {
+      key: key,
+      action: action
+    };
+  })).map(function (item) {
+    return new ToolbarItem(item);
   });
   return items;
 }
@@ -88,8 +95,8 @@ exports.mapTermsState = function mapTermsState(state, map) {
     for (var _iterator = (0, _getIterator2.default)((0, _keys.default)(conf).filter(function (key) {
       return key !== 'items';
     })), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-      var _key = _step.value;
-      toolbar[_key] = conf[_key];
+      var _key2 = _step.value;
+      toolbar[_key2] = conf[_key2];
     }
   } catch (err) {
     _didIteratorError = true;
