@@ -7,7 +7,7 @@ const iconSets = {
 }
 
 
-export function formatIconName(name, iconset = 'Md') {
+export function formatIconName (name, iconset = 'Md') {
   const firstLetter = name[0].toUpperCase()
   const body = name.substr(1)
 
@@ -24,20 +24,26 @@ function resolveIcon (props, attrs={}) {
   const name    = props.icon
   const iconset = props.iconset || 'Md'
 
-  console.info("resolving icon for", props)
-  console.info("resolved icon/set", name, iconset)
-
   if (!name)
     return null
 
-  let iconName  = formatIconName(name, iconset)
-  let iconGroup = iconSets[iconset.toLowerCase()]
-  console.info("resolved iconName, iconGroup", iconName, iconGroup)
+  const iconName  = formatIconName(name, iconset)
+  const iconGroup = iconSets[iconset.toLowerCase()]
+
+  if (process.env.NODE_ENV === 'development') {
+    console.groupCollapsed("resolved icon", iconset, name)
+    console.info("group", iconset)
+    console.info("icon", name)
+    console.info("iconName", iconName)
+    console.info("iconGroup", iconGroup)
+    console.info("IconComponent", iconGroup && iconGroup[iconName])
+    console.groupEnd()
+  }
 
   if (!iconGroup)
     return null
 
-  let IconComponent = iconGroup[iconName]
+  const IconComponent = iconGroup[iconName]
   if (IconComponent)
     return <IconComponent { ...attrs } />
 
@@ -70,7 +76,6 @@ export default (ExtendedComponent) =>
 
     componentWillMount () {
       this.css = decorateStyle(this.props)
-      window.csss = this.css
     }
 
     componentWillUnmount () {
@@ -123,23 +128,24 @@ const transition = [
   'background-color 300ms',
   'border-color 300ms',
   'box-shadow 300ms',
+  'opacity 300ms',
 ].join(', ')
 
 const decorateStyle = props => Stylesheet.apply({
 
-  container: {
+  '.container': {
     flexFlow: 'column',
     position: 'relative',
     display:  'flex',
     height:   '100%',
   },
 
-  terms: {
+  '.terms': {
     position: 'relative',
     flex: '1 1',
   },
 
-  toolbar: {
+  '.toolbar': {
     position: 'relative',
     display:  'flex',
     zIndex:   100,
@@ -147,7 +153,7 @@ const decorateStyle = props => Stylesheet.apply({
     margin:   `0 0 -${props.toolbar.gutter}px`,
   },
 
-  toolbarItem: {
+  '.toolbarItem': {
     margin:           0,
     flexGrow:         1,
     display:          'flex',
@@ -161,21 +167,24 @@ const decorateStyle = props => Stylesheet.apply({
     backgroundColor:  props.toolbar.itemBackgroundColor,
     textTransform:    'uppercase',
     letterSpacing:    '2px',
+    opacity: 0.6,
     transition,
   },
 
-  toolbarItemIcon: {
-    width: '3em',
+  '.toolbarItemIcon': {
+    width: '4em',
     height: 'auto',
-    padding: '0 0.6em',
+    padding: '0 0.6em 0 0',
   },
 
-  'button:focus': {
-    outline: 'none',
-  },
-  'button:hover': {
+  'button.toolbarItem:hover, button.toolbarItem:focus': {
     color: props.toolbar.itemTextColorHover,
+    opacity: 1,
     cursor: 'pointer',
-    backgroundColor: props.toolbar.itemBackgroundColorHover,
+    backgroundColor: props.toolbar.itemBackgroundColorHover + ' !important',
+  },
+
+  'button.toolbarItem:focus': {
+    outline: 'none',
   },
 })

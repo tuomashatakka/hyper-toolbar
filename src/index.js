@@ -1,16 +1,16 @@
-const render = require('../dist/render').default
-const { getConfigurationInterface } = require('../dist/utils')
+const render = require('./render').default
+const { getConfigurationInterface } = require('./utils')
 
 
-const defaultConfig = {
-  itemTextColor:            '#ffafe0',
-  itemTextColorHover:       'white',
-  itemBackgroundColor:      'rgba(255, 31, 96, 0.2)',
-  itemBackgroundColorHover: 'rgb(255, 31, 96)',
+const defaultConfig = ({ foregroundColor, colors }) => ({
+  itemTextColor:            foregroundColor,
+  itemTextColorHover:       colors.lightWhite,
+  itemBackgroundColor:      'transparent',
+  itemBackgroundColorHover: colors.lightBlack,
+  itemGutter:               1,
   height:                   80,
   items:                    {},
-  itemGutter:               1,
-}
+})
 
 
 function run (command, uid) {
@@ -45,31 +45,31 @@ function resolveToolbarItems (data) {
   if (typeof data === 'object')
     items = (data instanceof Array
       ? data : Object.entries(data).map(([ text, action ]) => ({ key, action })))
-    .map((item) => new ToolbarItem(item))
+      .map((item) => new ToolbarItem(item))
 
   return items
 }
 
 
 exports.decorateConfig = (config) => {
-  const toolbar = Object.assign({}, defaultConfig, config.toolbar || {})
-  return Object.assign({}, config, { toolbar })
+  const toolbar = Object.assign({}, defaultConfig(config), config.toolbar || {})
+  const finalConf = Object.assign({}, config, { toolbar })
+  console.log(finalConf)
+  return finalConf
 }
 
 
 exports.mapTermsState = function mapTermsState (state, map) {
   let toolbar = {}
-  let conf = Object.assign({}, defaultConfig, config.getConfig().toolbar || {})
+  let conf = Object.assign({}, defaultConfig(map), config.getConfig().toolbar || {})
 
-  console.warn("Conf", conf)
-  for (let key of Object.keys(conf).filter(key => key !== 'items'))
+  for (const key of Object.keys(conf).filter(key => key !== 'items'))
     toolbar[key] = conf[key]
-  console.warn("Toolbar", toolbar)
+
   const props = Object.assign({}, map, {
     toolbar,
     items: resolveToolbarItems(conf.items),
   })
-  console.log("PROPS", props)
   return props
 }
 

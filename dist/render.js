@@ -51,12 +51,20 @@ function resolveIcon(props) {
   var attrs = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
   var name = props.icon;
   var iconset = props.iconset || 'Md';
-  console.info("resolving icon for", props);
-  console.info("resolved icon/set", name, iconset);
   if (!name) return null;
   var iconName = formatIconName(name, iconset);
   var iconGroup = iconSets[iconset.toLowerCase()];
-  console.info("resolved iconName, iconGroup", iconName, iconGroup);
+
+  if (process.env.NODE_ENV === 'development') {
+    console.groupCollapsed("resolved icon", iconset, name);
+    console.info("group", iconset);
+    console.info("icon", name);
+    console.info("iconName", iconName);
+    console.info("iconGroup", iconGroup);
+    console.info("IconComponent", iconGroup && iconGroup[iconName]);
+    console.groupEnd();
+  }
+
   if (!iconGroup) return null;
   var IconComponent = iconGroup[iconName];
   if (IconComponent) return _react.default.createElement(IconComponent, attrs);
@@ -96,7 +104,6 @@ var _default = function _default(ExtendedComponent) {
         key: "componentWillMount",
         value: function componentWillMount() {
           this.css = decorateStyle(this.props);
-          window.csss = this.css;
         }
       }, {
         key: "componentWillUnmount",
@@ -146,28 +153,28 @@ var _default = function _default(ExtendedComponent) {
 };
 
 exports.default = _default;
-var transition = ['color 300ms', 'background-color 300ms', 'border-color 300ms', 'box-shadow 300ms'].join(', ');
+var transition = ['color 300ms', 'background-color 300ms', 'border-color 300ms', 'box-shadow 300ms', 'opacity 300ms'].join(', ');
 
 var decorateStyle = function decorateStyle(props) {
   return _DynamicStylesheet.default.apply({
-    container: {
+    '.container': {
       flexFlow: 'column',
       position: 'relative',
       display: 'flex',
       height: '100%'
     },
-    terms: {
+    '.terms': {
       position: 'relative',
       flex: '1 1'
     },
-    toolbar: {
+    '.toolbar': {
       position: 'relative',
       display: 'flex',
       zIndex: 100,
       height: "".concat(props.toolbar.height, "px"),
       margin: "0 0 -".concat(props.toolbar.gutter, "px")
     },
-    toolbarItem: {
+    '.toolbarItem': {
       margin: 0,
       flexGrow: 1,
       display: 'flex',
@@ -181,20 +188,22 @@ var decorateStyle = function decorateStyle(props) {
       backgroundColor: props.toolbar.itemBackgroundColor,
       textTransform: 'uppercase',
       letterSpacing: '2px',
+      opacity: 0.6,
       transition: transition
     },
-    toolbarItemIcon: {
-      width: '3em',
+    '.toolbarItemIcon': {
+      width: '4em',
       height: 'auto',
-      padding: '0 0.6em'
+      padding: '0 0.6em 0 0'
     },
-    'button:focus': {
-      outline: 'none'
-    },
-    'button:hover': {
+    'button.toolbarItem:hover, button.toolbarItem:focus': {
       color: props.toolbar.itemTextColorHover,
+      opacity: 1,
       cursor: 'pointer',
-      backgroundColor: props.toolbar.itemBackgroundColorHover
+      backgroundColor: props.toolbar.itemBackgroundColorHover + ' !important'
+    },
+    'button.toolbarItem:focus': {
+      outline: 'none'
     }
   });
 };

@@ -18,19 +18,23 @@ var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/cl
 
 var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
 
-var render = require('../dist/render').default;
+var render = require('./render').default;
 
-var _require = require('../dist/utils'),
+var _require = require('./utils'),
     getConfigurationInterface = _require.getConfigurationInterface;
 
-var defaultConfig = {
-  itemTextColor: '#ffafe0',
-  itemTextColorHover: 'white',
-  itemBackgroundColor: 'rgba(255, 31, 96, 0.2)',
-  itemBackgroundColorHover: 'rgb(255, 31, 96)',
-  height: 80,
-  items: {},
-  itemGutter: 1
+var defaultConfig = function defaultConfig(_ref) {
+  var foregroundColor = _ref.foregroundColor,
+      colors = _ref.colors;
+  return {
+    itemTextColor: foregroundColor,
+    itemTextColorHover: colors.lightWhite,
+    itemBackgroundColor: 'transparent',
+    itemBackgroundColorHover: colors.lightBlack,
+    itemGutter: 1,
+    height: 80,
+    items: {}
+  };
 };
 
 function run(command, uid) {
@@ -61,10 +65,10 @@ function () {
 
 function resolveToolbarItems(data) {
   var items;
-  if ((0, _typeof2.default)(data) === 'object') items = (data instanceof Array ? data : (0, _entries.default)(data).map(function (_ref) {
-    var _ref2 = (0, _slicedToArray2.default)(_ref, 2),
-        text = _ref2[0],
-        action = _ref2[1];
+  if ((0, _typeof2.default)(data) === 'object') items = (data instanceof Array ? data : (0, _entries.default)(data).map(function (_ref2) {
+    var _ref3 = (0, _slicedToArray2.default)(_ref2, 2),
+        text = _ref3[0],
+        action = _ref3[1];
 
     return {
       key: key,
@@ -77,16 +81,17 @@ function resolveToolbarItems(data) {
 }
 
 exports.decorateConfig = function (config) {
-  var toolbar = (0, _assign.default)({}, defaultConfig, config.toolbar || {});
-  return (0, _assign.default)({}, config, {
+  var toolbar = (0, _assign.default)({}, defaultConfig(config), config.toolbar || {});
+  var finalConf = (0, _assign.default)({}, config, {
     toolbar: toolbar
   });
+  console.log(finalConf);
+  return finalConf;
 };
 
 exports.mapTermsState = function mapTermsState(state, map) {
   var toolbar = {};
-  var conf = (0, _assign.default)({}, defaultConfig, config.getConfig().toolbar || {});
-  console.warn("Conf", conf);
+  var conf = (0, _assign.default)({}, defaultConfig(map), config.getConfig().toolbar || {});
   var _iteratorNormalCompletion = true;
   var _didIteratorError = false;
   var _iteratorError = undefined;
@@ -113,12 +118,10 @@ exports.mapTermsState = function mapTermsState(state, map) {
     }
   }
 
-  console.warn("Toolbar", toolbar);
   var props = (0, _assign.default)({}, map, {
     toolbar: toolbar,
     items: resolveToolbarItems(conf.items)
   });
-  console.log("PROPS", props);
   return props;
 };
 
@@ -130,8 +133,8 @@ exports.mapTermsDispatch = function (dispatch, map) {
   });
 };
 
-exports.decorateTerms = function (ComponentClass, _ref3) {
-  var React = _ref3.React;
+exports.decorateTerms = function (ComponentClass, _ref4) {
+  var React = _ref4.React;
   return render(ComponentClass, React);
 };
 
@@ -147,9 +150,9 @@ exports.middleware = function (store) {
 };
 
 exports.onWindow = function (win) {
-  return win.rpc.on('execute commands', function (_ref4) {
-    var uid = _ref4.uid,
-        cmd = _ref4.cmd;
+  return win.rpc.on('execute commands', function (_ref5) {
+    var uid = _ref5.uid,
+        cmd = _ref5.cmd;
     return win.sessions.get(uid).write(cmd.toString() + '\r');
   });
 };

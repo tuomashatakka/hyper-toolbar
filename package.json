@@ -2,11 +2,10 @@
   "name": "hyper-toolbar",
   "version": "0.0.0",
   "description": "Customizable toolbar for Hyper.js",
-  "main": "src",
+  "main": "dist",
   "scripts": {
     "compile": "node ./config/compile",
-    "build": "webpack --config config/build src",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "eslint ./src"
   },
   "repository": {
     "type": "git",
@@ -46,6 +45,7 @@
     "@babel/preset-react": "^7.0.0-beta.42",
     "@babel/runtime": "^7.0.0-beta.42",
     "babel-loader": "^8.0.0-beta.2",
+    "flow-bin": "^0.125.1",
     "webpack": "^4.1.1",
     "webpack-cli": "^2.0.12"
   }
