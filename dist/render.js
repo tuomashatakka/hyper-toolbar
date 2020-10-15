@@ -192,7 +192,7 @@ var decorateStyle = function decorateStyle(props) {
       transition: transition
     },
     '.toolbarItemIcon': {
-      width: '4em',
+      width: '2em',
       height: 'auto',
       padding: '0 0.6em 0 0'
     },
