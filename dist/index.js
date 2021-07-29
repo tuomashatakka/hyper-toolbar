@@ -27,11 +27,12 @@ var defaultConfig = function defaultConfig(_ref) {
   var foregroundColor = _ref.foregroundColor,
       colors = _ref.colors;
   return {
+    itemTextSize: 1,
     itemTextColor: foregroundColor,
     itemTextColorHover: colors.lightWhite,
     itemBackgroundColor: 'transparent',
     itemBackgroundColorHover: colors.lightBlack,
-    itemGutter: 1,
+    gutter: 1,
     height: 80,
     items: {}
   };

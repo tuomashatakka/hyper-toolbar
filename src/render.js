@@ -163,6 +163,7 @@ const decorateStyle = props => Stylesheet.apply({
     appearance:       'none',
     minWidth:         `${props.toolbar.height}px`,
     marginRight:      `${props.toolbar.gutter}px`,
+    fontSize:         `${props.toolbar.itemTextSize}em`,
     color:            props.toolbar.itemTextColor,
     backgroundColor:  props.toolbar.itemBackgroundColor,
     textTransform:    'uppercase',

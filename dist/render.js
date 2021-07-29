@@ -184,6 +184,7 @@ var decorateStyle = function decorateStyle(props) {
       appearance: 'none',
       minWidth: "".concat(props.toolbar.height, "px"),
       marginRight: "".concat(props.toolbar.gutter, "px"),
+      fontSize: "".concat(props.toolbar.itemTextSize, "em"),
       color: props.toolbar.itemTextColor,
       backgroundColor: props.toolbar.itemBackgroundColor,
       textTransform: 'uppercase',
