@@ -51,6 +51,7 @@ function () {
     this.action = item.action;
     this.icon = item.icon || null;
     this.iconset = item.iconset || 'md';
+    this.promptParams = item.promptParams || false;
   }
 
   (0, _createClass2.default)(ToolbarItem, [{

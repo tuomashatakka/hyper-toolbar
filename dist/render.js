@@ -97,6 +97,10 @@ var _default = function _default(ExtendedComponent) {
         (0, _classCallCheck2.default)(this, Host);
         _this = (0, _possibleConstructorReturn2.default)(this, (Host.__proto__ || (0, _getPrototypeOf.default)(Host)).call(this, props));
         _this.renderToolbarItem = _this.renderToolbarItem.bind((0, _assertThisInitialized2.default)(_this));
+        _this.state = {
+          activeItem: null,
+          params: ''
+        };
         return _this;
       }
 
@@ -123,7 +127,7 @@ var _default = function _default(ExtendedComponent) {
             className: this.css.selector.terms
           }, _react.default.createElement(ExtendedComponent, props)), items && _react.default.createElement("aside", {
             className: this.css.selector.toolbar
-          }, items.map(this.renderToolbarItem)));
+          }, items.map(this.renderToolbarItem)), this.renderModal());
         }
       }, {
         key: "proxyDispatch",
@@ -131,20 +135,76 @@ var _default = function _default(ExtendedComponent) {
           var _this2 = this;
 
           return function () {
-            return _this2.props.runShellCommand(cmd);
+            for (var _len = arguments.length, params = new Array(_len), _key = 0; _key < _len; _key++) {
+              params[_key] = arguments[_key];
+            }
+
+            return _this2.props.runShellCommand([cmd].concat(params).join(' '));
           };
         } // eslint-disable-next-line class-methods-use-this
 
       }, {
         key: "renderToolbarItem",
-        value: function renderToolbarItem(item) {
+        value: function renderToolbarItem(item, key) {
+          var _this3 = this;
+
           var icon = resolveIcon(item, {
             className: this.css.selector.toolbarItemIcon
           });
+          var handleClick;
+          if (item.promptParams) handleClick = function handleClick() {
+            return _this3.setState({
+              activeItem: key
+            });
+          };else handleClick = this.proxyDispatch(item.command);
           return _react.default.createElement("button", {
+            key: key,
             className: this.css.selector.toolbarItem,
-            onClick: this.proxyDispatch(item.command)
+            onClick: function onClick() {
+              console.log(key, item);
+              handleClick();
+            }
           }, icon, item.children);
+        }
+      }, {
+        key: "renderModal",
+        value: function renderModal() {
+          var _this4 = this;
+
+          if (this.state.activeItem === null) return null;
+          var activeItem = this.props.items[this.state.activeItem];
+
+          var handleSubmit = function handleSubmit(e) {
+            e.preventDefault();
+
+            var command = _this4.proxyDispatch(activeItem.command);
+
+            var params = _this4.state.params.trim().split(' ');
+
+            _this4.setState({
+              params: '',
+              activeItem: null
+            }, function () {
+              return command(params);
+            });
+
+            return false;
+          };
+
+          return _react.default.createElement("aside", {
+            className: this.css.selector.modal
+          }, _react.default.createElement("form", {
+            onSubmit: handleSubmit
+          }, _react.default.createElement("span", null, activeItem.command), _react.default.createElement("input", {
+            value: this.state.params,
+            onChange: function onChange(e) {
+              return _this4.setState({
+                params: e.target.value
+              });
+            }
+          }), _react.default.createElement("button", {
+            type: "submit"
+          }, "Run")));
         }
       }]);
       return Host;
@@ -166,6 +226,16 @@ var decorateStyle = function decorateStyle(props) {
     '.terms': {
       position: 'relative',
       flex: '1 1'
+    },
+    '.modal': {
+      position: 'absolute',
+      display: 'flex',
+      zIndex: 200,
+      height: "80px",
+      width: "70%",
+      left: '50%',
+      top: '50%',
+      transform: "translate(-50%, -50%)"
     },
     '.toolbar': {
       position: 'relative',

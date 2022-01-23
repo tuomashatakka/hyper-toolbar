@@ -26,6 +26,7 @@ class ToolbarItem {
     this.action   = item.action
     this.icon     = item.icon || null
     this.iconset  = item.iconset || 'md'
+    this.promptParams  = item.promptParams || false
   }
 
   get command () {

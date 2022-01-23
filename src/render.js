@@ -72,6 +72,11 @@ export default (ExtendedComponent) =>
     constructor (props) {
       super(props)
       this.renderToolbarItem = this.renderToolbarItem.bind(this)
+
+      this.state = {
+        activeItem: null,
+        params: '',
+      }
     }
 
     componentWillMount () {
@@ -96,28 +101,66 @@ export default (ExtendedComponent) =>
           </aside>
         }
 
+        { this.renderModal() }
+
       </div>
     }
 
     proxyDispatch (cmd) {
-      return () => this.props.runShellCommand(cmd)
+      return (...params) => this.props.runShellCommand([ cmd, ...params ].join(' '))
     }
 
     // eslint-disable-next-line class-methods-use-this
-    renderToolbarItem (item) {
+    renderToolbarItem (item, key) {
 
       const icon = resolveIcon(item, {
         className: this.css.selector.toolbarItemIcon
       })
 
+      let handleClick
+
+      if (item.promptParams)
+        handleClick = () => this.setState({ activeItem: key })
+      else 
+        handleClick = this.proxyDispatch(item.command)
+
       return <button
+        key={ key }
         className={ this.css.selector.toolbarItem }
-        onClick={ this.proxyDispatch(item.command) }>
+        onClick={ () => {
+          console.log(key, item)
+          handleClick()
+         } }>
 
         { icon }
         { item.children }
 
       </button>
+    }
+
+    renderModal () {
+      if (this.state.activeItem === null)
+        return null
+
+      const activeItem = this.props.items[this.state.activeItem]
+      const handleSubmit = (e) => {
+        e.preventDefault()
+        const command = this.proxyDispatch(activeItem.command)
+        const params = this.state.params.trim().split(' ')
+        this.setState({ params: '', activeItem: null }, () => command(params))
+        return false
+      }
+
+      return <aside className={ this.css.selector.modal }>
+        <form onSubmit={ handleSubmit }>
+          <span>{ activeItem.command }</span>
+          <input 
+            value={ this.state.params }
+            onChange={ (e) => this.setState({ params: e.target.value })}
+          />
+          <button type='submit'>Run</button>
+        </form>
+      </aside>
     }
 
   }
@@ -143,6 +186,17 @@ const decorateStyle = props => Stylesheet.apply({
   '.terms': {
     position: 'relative',
     flex: '1 1',
+  },
+
+  '.modal': {
+    position:   'absolute',
+    display:    'flex',
+    zIndex:     2000,
+    height:     `80px`,
+    width:      `70%`,
+    left:       '50%',
+    top:        '50%',
+    transform:  `translate(-50%, -50%)`,
   },
 
   '.toolbar': {
